@@ -2,8 +2,10 @@
 const data = site.data.projects || {};
 const profile = data.profile || {};
 const focus = data.focus || [];
-const categories = data.categories || [];
-const projectCount = categories.reduce((sum, category) => sum + ((category.projects || []).length), 0);
+const featured = data.featured || [];
+const general = data.general || [];
+const featuredCount = featured.reduce((sum, category) => sum + ((category.projects || []).length), 0);
+const projectCount = featuredCount + general.length;
 const docsData = site.data.docs || {};
 const docsStats = docsData.stats || {};
 %>
@@ -15,30 +17,21 @@ const docsStats = docsData.stats || {};
     <h1>Nopiskl</h1>
     <p class="hero-kicker"><%= profile.headline %></p>
     <p class="hero-copy"><%= profile.intro %></p>
+    <div class="hero-focus" aria-label="工程方向">
+      <% focus.forEach(function(item, index) { %>
+        <span><b><%= String(index + 1).padStart(2, '0') %></b><%= item %></span>
+      <% }) %>
+    </div>
     <div class="hero-actions">
-      <a class="button primary" href="#projects">查看项目</a>
+      <a class="button primary" href="<%- url_for('/docs/') %>">进入文档库</a>
+      <a class="button secondary" href="#projects">查看项目</a>
       <a class="button secondary" href="<%= profile.index_url %>" target="_blank" rel="noopener">GitHub 项目索引</a>
     </div>
   </div>
   <div class="hero-stats" aria-label="project statistics">
-    <span><strong><%= categories.length %></strong><small>方向</small></span>
+    <span><strong><%= featuredCount %></strong><small>重点项目</small></span>
     <span><strong><%= projectCount %></strong><small>项目</small></span>
     <span><strong>Hexo</strong><small>驱动</small></span>
-  </div>
-</section>
-
-<section class="focus-section" id="focus">
-  <div class="section-head">
-    <p class="eyebrow">Focus Areas</p>
-    <h2>工程方向</h2>
-  </div>
-  <div class="focus-grid">
-    <% focus.forEach(function(item, index) { %>
-      <div class="focus-item">
-        <span><%= String(index + 1).padStart(2, '0') %></span>
-        <strong><%= item %></strong>
-      </div>
-    <% }) %>
   </div>
 </section>
 
@@ -46,14 +39,14 @@ const docsStats = docsData.stats || {};
   <div class="section-head">
     <div>
       <p class="eyebrow">Documentation</p>
-      <h2>文档沉淀</h2>
+      <h2>文档</h2>
     </div>
-    <a class="text-link" href="<%- url_for('/docs/') %>">进入文档库</a>
+    <a class="button primary docs-button" href="<%- url_for('/docs/') %>">进入文档库</a>
   </div>
   <div class="docs-teaser-body">
     <div>
-      <strong>按 <code>docs/</code> 目录结构组织的项目文档</strong>
-      <p>文档区用于承载 Linux、驱动、BSP、SoC 与后续工程笔记，阅读页会保留更适合长文和源码分析的深色主题。</p>
+      <strong>项目文档、源码分析和工程笔记</strong>
+      <p><%= profile.docs_intro %></p>
     </div>
     <div class="docs-teaser-stats" aria-label="documentation statistics">
       <span><strong><%= docsStats.documents || 0 %></strong><small>文章</small></span>
@@ -65,28 +58,51 @@ const docsStats = docsData.stats || {};
 
 <section class="projects-section" id="projects">
   <div class="section-head">
-    <p class="eyebrow">Projects</p>
-    <h2>项目总览</h2>
+    <div>
+      <p class="eyebrow">Projects</p>
+      <h2>项目</h2>
+    </div>
     <a class="text-link" href="<%= profile.index_url %>" target="_blank" rel="noopener">完整说明在 GitHub</a>
   </div>
 
-  <% categories.forEach(function(category) { %>
-    <section class="project-group">
-      <div class="group-head">
+  <% featured.forEach(function(category) { %>
+    <section class="featured-project-group">
+      <div class="featured-group-head">
         <h3><%= category.name %></h3>
         <p><%= category.summary %></p>
       </div>
-      <div class="project-grid">
+      <div class="featured-project-grid">
         <% (category.projects || []).forEach(function(project) { %>
-          <a class="project-card" href="<%= project.url %>" target="_blank" rel="noopener">
+          <a class="featured-project-card" href="<%= project.url %>" target="_blank" rel="noopener">
+            <% if (project.cover) { %>
+              <img class="featured-project-cover" src="<%- url_for(project.cover) %>" alt="">
+            <% } %>
+            <span class="featured-project-shade"></span>
             <span class="project-status"><%= project.status %></span>
             <strong><%= project.name %></strong>
             <p><%= project.description %></p>
+            <% if (project.details && project.details.length) { %>
+              <ul>
+                <% project.details.forEach(function(detail) { %>
+                  <li><%= detail %></li>
+                <% }) %>
+              </ul>
+            <% } %>
           </a>
         <% }) %>
       </div>
     </section>
   <% }) %>
+
+  <div class="project-grid general-project-grid">
+    <% general.forEach(function(project) { %>
+      <a class="project-card" href="<%= project.url %>" target="_blank" rel="noopener">
+        <span class="project-status"><%= project.category %> / <%= project.status %></span>
+        <strong><%= project.name %></strong>
+        <p><%= project.description %></p>
+      </a>
+    <% }) %>
+  </div>
 </section>
 
 <section class="closing-band">
