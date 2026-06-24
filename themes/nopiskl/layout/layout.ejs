@@ -1,0 +1,48 @@
+<%
+const navItems = theme.navigation || [];
+const pageTitle = page.title ? page.title + ' · ' + config.title : config.title;
+%>
+<!doctype html>
+<html lang="<%= config.language || 'zh-CN' %>">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="<%= config.description %>">
+  <meta name="theme-color" content="#09090b">
+  <title><%= pageTitle %></title>
+  <%- css('css/style') %>
+</head>
+<body>
+  <div class="site-progress" data-progress></div>
+  <header class="site-header">
+    <a class="brand" href="<%- url_for('/') %>" aria-label="<%= config.title %>">
+      <span class="brand-mark">NP</span>
+      <span>
+        <strong><%= config.title %></strong>
+        <small><%= config.subtitle %></small>
+      </span>
+    </a>
+    <button class="nav-toggle" type="button" aria-label="切换导航" data-nav-toggle>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="site-nav" data-nav>
+      <% navItems.forEach(function(item) { %>
+        <a href="<%- url_for(item.path) %>"><%= item.name %></a>
+      <% }) %>
+      <% if (theme.github) { %>
+        <a href="<%= theme.github %>" rel="noopener" target="_blank">GitHub</a>
+      <% } %>
+    </nav>
+  </header>
+  <main>
+    <%- body %>
+  </main>
+  <footer class="site-footer">
+    <span>© <%= new Date().getFullYear() %> Nopiskl</span>
+    <span>由 Hexo 驱动</span>
+    <a href="https://github.com/Nopiskl/Nopiskl" target="_blank" rel="noopener">项目索引</a>
+  </footer>
+  <%- js('js/theme') %>
+</body>
+</html>

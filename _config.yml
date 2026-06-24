@@ -1,0 +1,42 @@
+title: Nopiskl
+subtitle: Embedded Linux & AIoT Projects
+description: Nopiskl 的嵌入式 Linux、BSP、SoC、AIoT、Android 移植和 AI 应用项目主页。
+keywords: Nopiskl, Linux, Embedded, SoC, BSP, AIoT, Android, Hexo
+author: Nopiskl
+language: zh-CN
+timezone: Asia/Shanghai
+
+url: https://nopiskl.github.io
+root: /
+permalink: :title/
+pretty_urls:
+  trailing_index: true
+  trailing_html: false
+
+theme: nopiskl
+
+source_dir: source
+public_dir: public
+marked:
+  prependRoot: false
+  postAsset: false
+  gfm: true
+  breaks: false
+  smartypants: false
+
+highlight:
+  enable: true
+  line_number: false
+  auto_detect: true
+  tab_replace: "  "
+  wrap: true
+  hljs: true
+
+prismjs:
+  enable: false
+
+metadata:
+  generator: true
+
+ignore:
+  - "**/~$*"

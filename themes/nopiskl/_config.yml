@@ -1,0 +1,8 @@
+github: https://github.com/Nopiskl
+navigation:
+  - name: 首页
+    path: /
+  - name: 项目
+    path: /#projects
+  - name: 方向
+    path: /#focus

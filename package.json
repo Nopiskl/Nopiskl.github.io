@@ -1,0 +1,23 @@
+{
+  "name": "nopiskl-github-pages",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nopiskl personal Hexo project portfolio",
+  "hexo": {
+    "version": "7.3.0"
+  },
+  "scripts": {
+    "clean": "hexo clean",
+    "build": "hexo generate",
+    "server": "hexo server --host 0.0.0.0 --port 4000",
+    "check": "npm run build"
+  },
+  "dependencies": {
+    "hexo": "^7.3.0",
+    "hexo-cli": "^4.3.2",
+    "hexo-renderer-ejs": "^2.0.0",
+    "hexo-renderer-marked": "^7.0.1",
+    "hexo-server": "^3.0.0"
+  },
+  "devDependencies": {}
+}
