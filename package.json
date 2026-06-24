@@ -8,8 +8,9 @@
   },
   "scripts": {
     "clean": "hexo clean",
-    "build": "hexo generate",
-    "server": "hexo server --host 0.0.0.0 --port 4000",
+    "docs:sync": "node tools/sync-docs.mjs",
+    "build": "npm run docs:sync && hexo generate",
+    "server": "npm run docs:sync && hexo server --host 0.0.0.0 --port 4000",
     "check": "npm run build"
   },
   "dependencies": {

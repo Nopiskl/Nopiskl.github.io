@@ -2,6 +2,8 @@ github: https://github.com/Nopiskl
 navigation:
   - name: 首页
     path: /
+  - name: 文档
+    path: /docs/
   - name: 项目
     path: /#projects
   - name: 方向

@@ -1,6 +1,8 @@
 node_modules/
-docs/
 public/
+source/docs/
+source/docs-assets/
+source/_data/docs.json
 .deploy_git/
 .DS_Store
 .cache/

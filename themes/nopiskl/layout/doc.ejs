@@ -1,0 +1,41 @@
+<%
+const docsData = site.data.docs || {};
+const docKey = page.doc_key || '';
+const doc = (docsData.documents || []).find(function(item) { return item.key === docKey; }) || {};
+const breadcrumbs = doc.breadcrumbs || [{ title: '文档', url: '/docs/' }];
+
+function basename(source) {
+  return String(source || '').split('/').pop() || source || '';
+}
+%>
+<section class="docs-shell doc-reading-shell">
+  <%- partial('_partial/docs-sidebar', { docsData: docsData, currentKey: docKey, currentDirKey: doc.dirKey || '' }) %>
+
+  <article class="doc-article">
+    <nav class="doc-breadcrumbs" aria-label="面包屑">
+      <% breadcrumbs.forEach(function(item, index) { %>
+        <% if (index > 0) { %><span>/</span><% } %>
+        <a href="<%- url_for(item.url) %>"><%= item.title %></a>
+      <% }) %>
+    </nav>
+
+    <header class="doc-hero">
+      <p class="doc-number">DOC / <%= basename(doc.source || page.doc_source || docKey) %></p>
+      <h1><%= page.title %></h1>
+      <div class="doc-meta">
+        <span>更新 <%= page.doc_updated || doc.updated || '' %></span>
+        <span>约 <%= page.doc_chars || doc.chars || 0 %> 字</span>
+        <span><%= breadcrumbs[breadcrumbs.length - 1].title || 'docs' %></span>
+      </div>
+    </header>
+
+    <div class="doc-content" data-doc-content>
+      <%- page.content %>
+    </div>
+  </article>
+
+  <aside class="doc-toc" aria-label="本页内容">
+    <strong>本页内容</strong>
+    <nav data-doc-toc></nav>
+  </aside>
+</section>

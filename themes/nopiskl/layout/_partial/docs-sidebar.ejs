@@ -1,0 +1,105 @@
+<%
+const data = docsData || site.data.docs || {};
+const directories = data.directories || {};
+const root = data.tree || { key: '', title: '文档', url: '/docs/', dirs: [], docs: [], attachments: [] };
+const activeKey = currentKey || '';
+const activeDirKey = currentDirKey || '';
+const focusNode = directories[activeDirKey] || root;
+const parentKey = activeDirKey ? activeDirKey.split('/').slice(0, -1).join('/') : null;
+const parentNode = parentKey !== null ? (directories[parentKey] || root) : null;
+const breadcrumbs = focusNode.breadcrumbs || [{ title: '文档', url: '/docs/', key: '' }];
+
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function isActiveBranch(node) {
+  if (!node || !node.key) return activeDirKey === '' || Boolean(activeKey);
+  return activeDirKey === node.key || activeDirKey.startsWith(node.key + '/') || activeKey.startsWith(node.key + '/');
+}
+
+function shouldRenderChildren(node, depth) {
+  return depth === 0 || isActiveBranch(node);
+}
+
+function shouldRenderDocs(node) {
+  return node && node.key === activeDirKey;
+}
+
+function renderNode(node, depth) {
+  const active = isActiveBranch(node);
+  const childDirs = node.dirs || [];
+  const childDocs = shouldRenderDocs(node) ? (node.docs || []) : [];
+  const attachments = shouldRenderDocs(node) ? (node.attachments || []) : [];
+  const expanded = shouldRenderChildren(node, depth);
+  let html = '';
+
+  html += `<li class="doc-tree-node depth-${depth} ${active ? 'is-active-branch' : ''}">`;
+  html += `<a class="doc-tree-folder ${activeDirKey === node.key ? 'is-current' : ''}" href="${url_for(node.url || '/docs/')}">`;
+  html += `<span>${escapeHtml(node.title)}</span>`;
+  html += '</a>';
+
+  if (expanded && (childDirs.length || childDocs.length || attachments.length)) {
+    html += '<ul>';
+    childDirs.forEach((child) => {
+      html += renderNode(child, depth + 1);
+    });
+    childDocs.forEach((doc) => {
+      html += '<li>';
+      html += `<a class="doc-tree-link ${activeKey === doc.key ? 'is-current' : ''}" href="${url_for(doc.url)}">`;
+      html += `<span>${escapeHtml(doc.title)}</span>`;
+      html += '</a>';
+      html += '</li>';
+    });
+    attachments.forEach((item) => {
+      html += '<li>';
+      html += `<a class="doc-tree-link attachment" href="${url_for(item.url)}">`;
+      html += `<span>${escapeHtml(item.title)}</span>`;
+      html += '</a>';
+      html += '</li>';
+    });
+    html += '</ul>';
+  }
+
+  html += '</li>';
+  return html;
+}
+%>
+
+<aside class="docs-sidebar" aria-label="文档目录">
+  <div class="docs-rail" aria-hidden="true">
+    <span>文档</span>
+  </div>
+  <div class="docs-sidebar-panel">
+    <div class="docs-sidebar-head">
+      <a href="<%- url_for('/docs/') %>">文档导航</a>
+    </div>
+
+    <nav class="docs-sidebar-crumbs" aria-label="文档路径">
+      <% breadcrumbs.forEach(function(item, index) { %>
+        <% if (index > 0) { %><span>/</span><% } %>
+        <a href="<%- url_for(item.url) %>"><%= item.title %></a>
+      <% }) %>
+    </nav>
+
+    <div class="docs-sidebar-actions">
+      <a href="<%- url_for('/docs/') %>">文档首页</a>
+      <% if (parentNode && focusNode.key !== '') { %>
+        <a href="<%- url_for(parentNode.url || '/docs/') %>">上一级</a>
+      <% } %>
+    </div>
+
+    <nav class="docs-tree" aria-label="文档树">
+      <ul>
+        <% (root.dirs || []).forEach(function(dir) { %>
+          <%- renderNode(dir, 0) %>
+        <% }) %>
+      </ul>
+    </nav>
+  </div>
+</aside>

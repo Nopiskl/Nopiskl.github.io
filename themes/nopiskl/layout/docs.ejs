@@ -1,0 +1,78 @@
+<%
+const docsData = site.data.docs || {};
+const dirKey = page.dir_key || '';
+const currentDir = (docsData.directories && docsData.directories[dirKey]) || docsData.tree || {};
+const childDirs = currentDir.dirs || [];
+const docs = currentDir.docs || [];
+const attachments = currentDir.attachments || [];
+const breadcrumbs = currentDir.breadcrumbs || [{ title: '文档', url: '/docs/' }];
+
+function basename(source) {
+  return String(source || '').split('/').pop() || source || '';
+}
+%>
+<section class="docs-shell docs-index-shell">
+  <%- partial('_partial/docs-sidebar', { docsData: docsData, currentKey: '', currentDirKey: dirKey }) %>
+
+  <section class="docs-main">
+    <nav class="doc-breadcrumbs" aria-label="面包屑">
+      <% breadcrumbs.forEach(function(item, index) { %>
+        <% if (index > 0) { %><span>/</span><% } %>
+        <a href="<%- url_for(item.url) %>"><%= item.title %></a>
+      <% }) %>
+    </nav>
+
+    <header class="docs-page-head">
+      <p class="eyebrow">Documentation</p>
+      <h1><%= currentDir.title || '文档' %></h1>
+    </header>
+
+    <% if (childDirs.length) { %>
+      <section class="docs-directory-section">
+        <h2>目录</h2>
+        <div class="docs-directory-list">
+          <% childDirs.forEach(function(dir) { %>
+            <a class="docs-directory-row" href="<%- url_for(dir.url) %>">
+              <span class="docs-folder-icon" aria-hidden="true">📁</span>
+              <strong><%= dir.title %>/</strong>
+              <small><%= dir.count || 0 %> 篇文档 · <%= dir.attachmentCount || 0 %> 附件</small>
+              <span class="docs-row-arrow" aria-hidden="true">›</span>
+            </a>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
+
+    <% if (docs.length) { %>
+      <section class="docs-list-section">
+        <h2>文章</h2>
+        <div class="docs-list">
+          <% docs.forEach(function(doc) { %>
+            <a class="docs-list-item" href="<%- url_for(doc.url) %>">
+              <span class="docs-file-icon docs-file-icon-md" aria-hidden="true">📄</span>
+              <strong><%= doc.title %></strong>
+              <small class="docs-file"><%= basename(doc.source) %></small>
+              <span class="docs-date"><%= doc.updated %></span>
+            </a>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
+
+    <% if (attachments.length) { %>
+      <section class="docs-list-section">
+        <h2>附件</h2>
+        <div class="docs-list">
+          <% attachments.forEach(function(item) { %>
+            <a class="docs-list-item attachment" href="<%- url_for(item.url) %>">
+              <span class="docs-file-icon docs-file-icon-attachment" aria-hidden="true">📎</span>
+              <strong><%= item.title %></strong>
+              <small class="docs-file"><%= basename(item.source) %></small>
+              <span class="docs-date"><%= item.updated %></span>
+            </a>
+          <% }) %>
+        </div>
+      </section>
+    <% } %>
+  </section>
+</section>

@@ -1,6 +1,7 @@
 <%
 const navItems = theme.navigation || [];
 const pageTitle = page.title ? page.title + ' · ' + config.title : config.title;
+const layoutName = Array.isArray(page.layout) ? page.layout[0] : (page.layout || 'page');
 %>
 <!doctype html>
 <html lang="<%= config.language || 'zh-CN' %>">
@@ -10,9 +11,20 @@ const pageTitle = page.title ? page.title + ' · ' + config.title : config.title
   <meta name="description" content="<%= config.description %>">
   <meta name="theme-color" content="#09090b">
   <title><%= pageTitle %></title>
+  <script>
+    (function () {
+      try {
+        var key = "nopiskl.docsSidebarKeepOpenUntil";
+        var keepUntil = Number(window.sessionStorage.getItem(key) || 0);
+        if (keepUntil > Date.now()) {
+          document.documentElement.classList.add("docs-sidebar-retained");
+        }
+      } catch (error) {}
+    })();
+  </script>
   <%- css('css/style') %>
 </head>
-<body>
+<body class="page-<%= layoutName %>">
   <div class="site-progress" data-progress></div>
   <header class="site-header">
     <a class="brand" href="<%- url_for('/') %>" aria-label="<%= config.title %>">

@@ -4,6 +4,8 @@ const profile = data.profile || {};
 const focus = data.focus || [];
 const categories = data.categories || [];
 const projectCount = categories.reduce((sum, category) => sum + ((category.projects || []).length), 0);
+const docsData = site.data.docs || {};
+const docsStats = docsData.stats || {};
 %>
 <section class="hero">
   <img class="hero-image" src="<%- url_for('/images/nopiskl-hero.png') %>" alt="Nopiskl embedded systems workspace">
@@ -37,6 +39,27 @@ const projectCount = categories.reduce((sum, category) => sum + ((category.proje
         <strong><%= item %></strong>
       </div>
     <% }) %>
+  </div>
+</section>
+
+<section class="docs-teaser" id="docs">
+  <div class="section-head">
+    <div>
+      <p class="eyebrow">Documentation</p>
+      <h2>文档沉淀</h2>
+    </div>
+    <a class="text-link" href="<%- url_for('/docs/') %>">进入文档库</a>
+  </div>
+  <div class="docs-teaser-body">
+    <div>
+      <strong>按 <code>docs/</code> 目录结构组织的项目文档</strong>
+      <p>文档区用于承载 Linux、驱动、BSP、SoC 与后续工程笔记，阅读页会保留更适合长文和源码分析的深色主题。</p>
+    </div>
+    <div class="docs-teaser-stats" aria-label="documentation statistics">
+      <span><strong><%= docsStats.documents || 0 %></strong><small>文章</small></span>
+      <span><strong><%= docsStats.directories || 0 %></strong><small>目录</small></span>
+      <span><strong><%= docsStats.attachments || 0 %></strong><small>附件</small></span>
+    </div>
   </div>
 </section>
 
