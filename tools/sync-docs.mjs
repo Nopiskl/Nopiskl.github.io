@@ -12,6 +12,7 @@ const ASSET_ROOT = path.join(SOURCE_ROOT, "docs-assets");
 const MARKER = ".generated-by-nopiskl-docs";
 
 const markdownExts = new Set([".md", ".markdown", ".mdown"]);
+const previewPageExts = new Set([".pdf", ".docx"]);
 const skippedNames = new Set([".DS_Store", "Thumbs.db"]);
 const collator = new Intl.Collator("zh-CN", { numeric: true, sensitivity: "base" });
 
@@ -283,6 +284,18 @@ function docRoute(dirKey, title, ownerKey) {
   return uniqueRoute(`/docs/${[...dirSegments, docSlug].join("/")}`, `doc:${ownerKey}`);
 }
 
+function attachmentRoute(dirKey, title, ownerKey) {
+  const dirSegments = dirKey ? dirKey.split("/").map((segment) => slugSegment(segment)) : [];
+  const attachmentSlug = `${slugSegment(title, "attachment")}-attachment`;
+  return uniqueRoute(`/docs/${[...dirSegments, attachmentSlug].join("/")}`, `attachment:${ownerKey}`);
+}
+
+function attachmentViewerRoute(dirKey, title, ownerKey) {
+  const dirSegments = dirKey ? dirKey.split("/").map((segment) => slugSegment(segment)) : [];
+  const attachmentSlug = `${slugSegment(title, "attachment")}-viewer`;
+  return uniqueRoute(`/docs/${[...dirSegments, attachmentSlug].join("/")}`, `attachment-viewer:${ownerKey}`);
+}
+
 function assetRoute(relFile) {
   const ext = path.extname(relFile);
   const stem = relFile.slice(0, -ext.length);
@@ -414,6 +427,22 @@ async function writeDocPage(doc, body) {
   await fs.writeFile(target, content);
 }
 
+async function writeAttachmentPage(attachment) {
+  const target = path.join(GENERATED_DOCS_ROOT, ...attachment.url.replace(/^\/docs\/?/, "").split("/").filter(Boolean), "index.md");
+  const content = `---\nlayout: attachment\ntitle: ${yamlString(attachment.title)}\nattachment_key: ${yamlString(attachment.key)}\n---\n`;
+
+  await fs.mkdir(path.dirname(target), { recursive: true });
+  await fs.writeFile(target, content);
+}
+
+async function writeAttachmentViewerPage(attachment) {
+  const target = path.join(GENERATED_DOCS_ROOT, ...attachment.viewerUrl.replace(/^\/docs\/?/, "").split("/").filter(Boolean), "index.md");
+  const content = `---\nlayout: attachment-viewer\ntitle: ${yamlString(`${attachment.title} · 全页预览`)}\nattachment_key: ${yamlString(attachment.key)}\n---\n`;
+
+  await fs.mkdir(path.dirname(target), { recursive: true });
+  await fs.writeFile(target, content);
+}
+
 async function main() {
   await resetGeneratedDir(GENERATED_DOCS_ROOT);
   await resetGeneratedDir(ASSET_ROOT);
@@ -464,12 +493,19 @@ async function main() {
       await writeDocPage(doc, body);
     } else {
       const publicUrl = await copyFileToSource(file, assetRoute(rel));
+      const title = titleFromFilename(file);
+      const previewKind = ext === ".pdf" ? "pdf" : ext === ".docx" ? "docx" : "";
+      const hasPreviewPage = previewPageExts.has(ext);
       const attachment = {
         type: "attachment",
         key: rel,
-        title: titleFromFilename(file),
+        title,
         ext: ext.replace(/^\./, "").toUpperCase() || "FILE",
-        url: publicUrl,
+        url: hasPreviewPage ? attachmentRoute(dirKey, title, rel) : publicUrl,
+        viewerUrl: hasPreviewPage ? attachmentViewerRoute(dirKey, title, rel) : "",
+        downloadUrl: publicUrl,
+        previewKind,
+        hasPreviewPage,
         source: `docs/${rel}`,
         dirKey,
         size: stat.size,
@@ -509,11 +545,22 @@ async function main() {
     doc.breadcrumbs = breadcrumbsForDir(dirMap, doc.dirKey);
   }
 
+  for (const attachment of attachments) {
+    attachment.breadcrumbs = breadcrumbsForDir(dirMap, attachment.dirKey);
+  }
+
   documents.sort((a, b) => collator.compare(a.source, b.source));
   attachments.sort((a, b) => collator.compare(a.source, b.source));
 
   for (const node of dirMap.values()) {
     await writeDirectoryPage(node);
+  }
+
+  for (const attachment of attachments) {
+    if (attachment.hasPreviewPage) {
+      await writeAttachmentPage(attachment);
+      await writeAttachmentViewerPage(attachment);
+    }
   }
 
   const directories = {};

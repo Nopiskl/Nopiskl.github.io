@@ -1110,7 +1110,9 @@ img {
 
 /* Docs reading surface: gloomyghost-inspired documents and hover-driven side panels. */
 .page-doc,
-.page-docs {
+.page-docs,
+.page-attachment,
+.page-attachment-viewer {
   --doc-bg: #070809;
   --doc-panel: #0d0f11;
   --doc-panel-2: #151a20;
@@ -1133,24 +1135,33 @@ img {
 
 .page-doc .site-header,
 .page-docs .site-header,
+.page-attachment .site-header,
+.page-attachment-viewer .site-header,
 .page-doc .site-footer,
-.page-docs .site-footer {
+.page-docs .site-footer,
+.page-attachment .site-footer,
+.page-attachment-viewer .site-footer {
   display: none;
 }
 
 .page-doc main,
-.page-docs main {
+.page-docs main,
+.page-attachment main,
+.page-attachment-viewer main {
   min-height: 100svh;
 }
 
-.page-doc .site-progress {
+.page-doc .site-progress,
+.page-attachment .site-progress,
+.page-attachment-viewer .site-progress {
   display: block;
   height: 4px;
   background: linear-gradient(90deg, #ffffff, var(--doc-accent));
 }
 
 .page-doc .docs-shell,
-.page-docs .docs-shell {
+.page-docs .docs-shell,
+.page-attachment .docs-shell {
   display: block;
   width: auto;
   max-width: none;
@@ -1159,35 +1170,41 @@ img {
 }
 
 .page-doc .doc-reading-shell,
-.page-docs .docs-index-shell {
+.page-docs .docs-index-shell,
+.page-attachment .doc-reading-shell {
   grid-template-columns: minmax(0, 1fr);
 }
 
 .page-doc .doc-article,
-.page-docs .docs-main {
+.page-docs .docs-main,
+.page-attachment .doc-article {
   width: 100%;
   max-width: none;
 }
 
 .page-doc .doc-breadcrumbs,
-.page-docs .doc-breadcrumbs {
+.page-docs .doc-breadcrumbs,
+.page-attachment .doc-breadcrumbs {
   margin-bottom: 32px;
   color: var(--doc-dim);
   font-size: 13px;
 }
 
 .page-doc .doc-breadcrumbs a:hover,
-.page-docs .doc-breadcrumbs a:hover {
+.page-docs .doc-breadcrumbs a:hover,
+.page-attachment .doc-breadcrumbs a:hover {
   color: var(--doc-accent);
 }
 
-.page-doc .doc-hero {
+.page-doc .doc-hero,
+.page-attachment .doc-hero {
   border-top: 1px solid var(--doc-line);
   border-bottom: 0;
   padding: 24px 0 52px;
 }
 
-.page-doc .doc-number {
+.page-doc .doc-number,
+.page-attachment .doc-number {
   margin-bottom: 34px;
   color: var(--doc-ink);
   font-size: 13px;
@@ -1200,7 +1217,8 @@ img {
 }
 
 .page-doc .doc-hero h1,
-.page-docs .docs-page-head h1 {
+.page-docs .docs-page-head h1,
+.page-attachment .doc-hero h1 {
   color: var(--doc-ink);
   font-family: var(--zh);
   font-size: clamp(52px, 5.2vw, 92px);
@@ -1208,12 +1226,14 @@ img {
   line-height: 1.08;
 }
 
-.page-doc .doc-meta {
+.page-doc .doc-meta,
+.page-attachment .doc-meta {
   gap: 24px;
   margin-top: 36px;
 }
 
-.page-doc .doc-meta span {
+.page-doc .doc-meta span,
+.page-attachment .doc-meta span {
   border: 0;
   padding: 0;
   color: var(--doc-muted);
@@ -1353,6 +1373,254 @@ img {
   font-size: 20px;
 }
 
+.attachment-viewer {
+  display: grid;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.attachment-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border: 1px solid var(--doc-line);
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.attachment-toolbar div {
+  min-width: 0;
+}
+
+.attachment-toolbar strong,
+.attachment-toolbar span {
+  display: block;
+}
+
+.attachment-toolbar strong {
+  color: var(--doc-ink);
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.attachment-toolbar span {
+  overflow: hidden;
+  color: var(--doc-muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-toolbar nav {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+}
+
+.attachment-frame {
+  min-height: min(980px, calc(100svh - 180px));
+  overflow: hidden;
+  border: 1px solid var(--doc-line-strong);
+  background: #111317;
+}
+
+.attachment-frame iframe {
+  display: block;
+  width: 100%;
+  height: min(980px, calc(100svh - 180px));
+  min-height: 720px;
+  border: 0;
+  background: #111317;
+}
+
+.docx-preview-shell {
+  overflow: hidden;
+  border: 1px solid var(--doc-line-strong);
+  background: #0c0d0f;
+}
+
+.docx-preview-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 1px solid var(--doc-line);
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.docx-preview-status strong,
+.docx-preview-status span {
+  display: block;
+}
+
+.docx-preview-status strong {
+  color: var(--doc-ink);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.docx-preview-status span {
+  color: var(--doc-muted);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.docx-preview-status.is-loading strong {
+  color: var(--doc-accent);
+}
+
+.docx-preview-status.is-ready strong {
+  color: var(--doc-green);
+}
+
+.docx-preview-status.is-error strong {
+  color: var(--doc-red);
+}
+
+.docx-preview-document {
+  min-height: 540px;
+  overflow: auto;
+  padding: 28px;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(255, 207, 66, 0.08), transparent 30%),
+    #101114;
+}
+
+.docx-preview-document:empty::before {
+  content: "DOCX preview loading...";
+  display: grid;
+  min-height: 420px;
+  place-items: center;
+  color: var(--doc-dim);
+  font-family: var(--mono);
+  font-size: 13px;
+}
+
+.docx-preview-document .docx-wrapper {
+  padding: 0;
+  background: transparent;
+}
+
+.docx-preview-document .docx {
+  max-width: 100%;
+  margin: 0 auto 24px;
+  box-shadow: 0 18px 56px rgba(0, 0, 0, 0.42);
+}
+
+.docx-preview-document .docx:last-child {
+  margin-bottom: 0;
+}
+
+.docx-preview-document img {
+  max-width: 100%;
+}
+
+.attachment-fullscreen {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 100svh;
+  background: var(--doc-bg);
+  color: var(--doc-ink);
+}
+
+.attachment-fullscreen-toolbar {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 64px;
+  border-bottom: 1px solid var(--doc-line);
+  padding: 10px clamp(16px, 3vw, 34px);
+  background: rgba(8, 9, 10, 0.98);
+}
+
+.attachment-fullscreen-toolbar div {
+  min-width: 0;
+}
+
+.attachment-fullscreen-toolbar strong,
+.attachment-fullscreen-toolbar span {
+  display: block;
+}
+
+.attachment-fullscreen-toolbar strong {
+  overflow: hidden;
+  color: var(--doc-ink);
+  font-size: 16px;
+  font-weight: 900;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-fullscreen-toolbar span {
+  overflow: hidden;
+  color: var(--doc-muted);
+  font-family: var(--mono);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.attachment-fullscreen-toolbar nav {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+}
+
+.attachment-fullscreen-frame {
+  display: block;
+  width: 100%;
+  height: calc(100svh - 64px);
+  border: 0;
+  background: #2e2e2e;
+}
+
+.attachment-fullscreen-docx {
+  height: calc(100svh - 64px);
+  border: 0;
+  border-radius: 0;
+}
+
+.attachment-fullscreen-docx .docx-preview-document {
+  height: calc(100svh - 113px);
+  min-height: 0;
+}
+
+.attachment-fullscreen-empty {
+  align-self: start;
+  margin: clamp(18px, 4vw, 48px);
+}
+
+.attachment-empty-state {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+  border: 1px solid var(--doc-line);
+  padding: clamp(24px, 4vw, 46px);
+  background:
+    linear-gradient(145deg, rgba(255, 207, 66, 0.08), rgba(255, 255, 255, 0.025)),
+    var(--doc-panel);
+}
+
+.attachment-empty-state h2 {
+  margin: 0;
+  color: var(--doc-ink);
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.1;
+}
+
+.attachment-empty-state p:not(.eyebrow) {
+  max-width: 760px;
+  margin: 0;
+  color: var(--doc-muted);
+  font-size: 17px;
+}
+
 .page-doc .doc-toc {
   position: fixed;
   top: 0;
@@ -1421,17 +1689,72 @@ img {
 
 @media (max-width: 900px) {
   .page-doc .docs-shell,
-  .page-docs .docs-shell {
+  .page-docs .docs-shell,
+  .page-attachment .docs-shell {
     padding: 82px 18px 64px;
   }
 
   .page-doc .doc-hero h1,
-  .page-docs .docs-page-head h1 {
+  .page-docs .docs-page-head h1,
+  .page-attachment .doc-hero h1 {
     font-size: 42px;
   }
 
   .page-doc .doc-toc {
     display: none;
+  }
+
+  .attachment-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .attachment-toolbar nav {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .attachment-toolbar .button {
+    width: 100%;
+  }
+
+  .attachment-frame,
+  .attachment-frame iframe {
+    height: 72svh;
+    min-height: 520px;
+  }
+
+  .docx-preview-status {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .docx-preview-document {
+    min-height: 480px;
+    padding: 14px;
+  }
+
+  .attachment-fullscreen-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .attachment-fullscreen-toolbar nav {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .attachment-fullscreen-toolbar .button {
+    width: 100%;
+  }
+
+  .attachment-fullscreen-frame,
+  .attachment-fullscreen-docx {
+    height: calc(100svh - 150px);
+  }
+
+  .attachment-fullscreen-docx .docx-preview-document {
+    height: calc(100svh - 199px);
   }
 }
 

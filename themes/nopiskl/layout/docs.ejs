@@ -10,6 +10,33 @@ const breadcrumbs = currentDir.breadcrumbs || [{ title: '文档', url: '/docs/' 
 function basename(source) {
   return String(source || '').split('/').pop() || source || '';
 }
+
+function formatBytes(size) {
+  const value = Number(size || 0);
+  if (!value) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  const index = Math.min(units.length - 1, Math.floor(Math.log(value) / Math.log(1024)));
+  return `${(value / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+}
+
+function attachmentIcon(item) {
+  if (item.previewKind === 'pdf') return '📕';
+  if (item.previewKind === 'docx') return '📘';
+  return '📎';
+}
+
+function attachmentHint(item) {
+  const action = item.viewerUrl ? '新窗口预览' : '打开附件';
+  return `${item.ext || 'FILE'} · ${formatBytes(item.size)} · ${action}`;
+}
+
+function attachmentHref(item) {
+  return item.viewerUrl || item.url;
+}
+
+function attachmentAttrs(item) {
+  return item.viewerUrl ? ' target="_blank" rel="noopener"' : '';
+}
 %>
 <section class="docs-shell docs-index-shell">
   <%- partial('_partial/docs-sidebar', { docsData: docsData, currentKey: '', currentDirKey: dirKey }) %>
@@ -64,10 +91,10 @@ function basename(source) {
         <h2>附件</h2>
         <div class="docs-list">
           <% attachments.forEach(function(item) { %>
-            <a class="docs-list-item attachment" href="<%- url_for(item.url) %>">
-              <span class="docs-file-icon docs-file-icon-attachment" aria-hidden="true">📎</span>
+            <a class="docs-list-item attachment" href="<%- url_for(attachmentHref(item)) %>"<%- attachmentAttrs(item) %>>
+              <span class="docs-file-icon docs-file-icon-attachment" aria-hidden="true"><%= attachmentIcon(item) %></span>
               <strong><%= item.title %></strong>
-              <small class="docs-file"><%= basename(item.source) %></small>
+              <small class="docs-file"><%= basename(item.source) %> · <%= attachmentHint(item) %></small>
               <span class="docs-date"><%= item.updated %></span>
             </a>
           <% }) %>

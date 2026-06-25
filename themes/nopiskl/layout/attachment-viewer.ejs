@@ -1,0 +1,57 @@
+<%
+const docsData = site.data.docs || {};
+const attachmentKey = page.attachment_key || '';
+const attachment = (docsData.attachments || []).find(function(item) { return item.key === attachmentKey; }) || {};
+const downloadUrl = attachment.downloadUrl || attachment.url || '#';
+const detailUrl = attachment.url || '/docs/';
+
+function formatBytes(size) {
+  const value = Number(size || 0);
+  if (!value) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  const index = Math.min(units.length - 1, Math.floor(Math.log(value) / Math.log(1024)));
+  return `${(value / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+}
+%>
+<section class="attachment-fullscreen">
+  <header class="attachment-fullscreen-toolbar">
+    <div>
+      <strong><%= attachment.title || page.title %></strong>
+      <span><%= attachment.ext || 'FILE' %> · <%= formatBytes(attachment.size) %> · <%= attachment.source || '' %></span>
+    </div>
+    <nav aria-label="预览操作">
+      <a class="button secondary" href="<%- url_for(detailUrl) %>">返回详情</a>
+      <a class="button primary" href="<%- url_for(downloadUrl) %>" target="_blank" rel="noopener">下载原件</a>
+    </nav>
+  </header>
+
+  <% if (attachment.previewKind === 'pdf') { %>
+    <iframe class="attachment-fullscreen-frame" src="<%- url_for(downloadUrl) %>#view=FitH" title="<%= attachment.title || page.title %>"></iframe>
+  <% } else if (attachment.previewKind === 'docx') { %>
+    <div
+      class="docx-preview-shell attachment-fullscreen-docx"
+      data-docx-preview
+      data-docx-url="<%- url_for(downloadUrl) %>"
+      data-docx-size="<%= Number(attachment.size || 0) %>"
+    >
+      <div class="docx-preview-status" data-docx-status>
+        <strong>正在准备 DOCX 预览</strong>
+        <span>全页预览会在浏览器端临时解析文档。</span>
+      </div>
+      <div class="docx-preview-document" data-docx-output></div>
+    </div>
+  <% } else { %>
+    <div class="attachment-empty-state attachment-fullscreen-empty">
+      <p class="eyebrow">Attachment</p>
+      <h2>此附件暂不支持内嵌预览</h2>
+      <p>可以先下载原始文件查看。</p>
+      <a class="button primary" href="<%- url_for(downloadUrl) %>" target="_blank" rel="noopener">下载附件</a>
+    </div>
+  <% } %>
+</section>
+
+<% if (attachment.previewKind === 'docx') { %>
+  <script defer src="<%- url_for('/vendor/jszip.min.js') %>"></script>
+  <script defer src="<%- url_for('/vendor/docx-preview.min.js') %>"></script>
+  <script defer src="<%- url_for('/js/docx-viewer.js') %>"></script>
+<% } %>

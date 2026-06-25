@@ -31,6 +31,14 @@ function shouldRenderDocs(node) {
   return node && node.key === activeDirKey;
 }
 
+function attachmentHref(item) {
+  return item.viewerUrl || item.url;
+}
+
+function attachmentTargetAttrs(item) {
+  return item.viewerUrl ? ' target="_blank" rel="noopener"' : '';
+}
+
 function renderNode(node, depth) {
   const active = isActiveBranch(node);
   const childDirs = node.dirs || [];
@@ -58,7 +66,7 @@ function renderNode(node, depth) {
     });
     attachments.forEach((item) => {
       html += '<li>';
-      html += `<a class="doc-tree-link attachment" href="${url_for(item.url)}">`;
+      html += `<a class="doc-tree-link attachment ${activeKey === item.key ? 'is-current' : ''}" href="${url_for(attachmentHref(item))}"${attachmentTargetAttrs(item)}>`;
       html += `<span>${escapeHtml(item.title)}</span>`;
       html += '</a>';
       html += '</li>';

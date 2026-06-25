@@ -1,0 +1,83 @@
+<%
+const docsData = site.data.docs || {};
+const attachmentKey = page.attachment_key || '';
+const attachment = (docsData.attachments || []).find(function(item) { return item.key === attachmentKey; }) || {};
+const breadcrumbs = attachment.breadcrumbs || [{ title: '文档', url: '/docs/' }];
+const downloadUrl = attachment.downloadUrl || attachment.url || '#';
+
+function basename(source) {
+  return String(source || '').split('/').pop() || source || '';
+}
+
+function formatBytes(size) {
+  const value = Number(size || 0);
+  if (!value) return '0 B';
+  const units = ['B', 'KB', 'MB', 'GB'];
+  const index = Math.min(units.length - 1, Math.floor(Math.log(value) / Math.log(1024)));
+  return `${(value / Math.pow(1024, index)).toFixed(index === 0 ? 0 : 1)} ${units[index]}`;
+}
+%>
+<section class="docs-shell doc-reading-shell attachment-reading-shell">
+  <%- partial('_partial/docs-sidebar', { docsData: docsData, currentKey: attachmentKey, currentDirKey: attachment.dirKey || '' }) %>
+
+  <article class="doc-article attachment-article">
+    <nav class="doc-breadcrumbs" aria-label="面包屑">
+      <% breadcrumbs.forEach(function(item, index) { %>
+        <% if (index > 0) { %><span>/</span><% } %>
+        <a href="<%- url_for(item.url) %>"><%= item.title %></a>
+      <% }) %>
+    </nav>
+
+    <header class="doc-hero attachment-hero">
+      <p class="doc-number"><%= attachment.ext || 'FILE' %> / <%= basename(attachment.source || attachmentKey) %></p>
+      <h1><%= page.title %></h1>
+      <div class="doc-meta">
+        <span>更新 <%= attachment.updated || '' %></span>
+        <span><%= formatBytes(attachment.size) %></span>
+        <span><%= breadcrumbs[breadcrumbs.length - 1].title || 'docs' %></span>
+      </div>
+    </header>
+
+    <section class="attachment-viewer">
+      <div class="attachment-toolbar">
+        <div>
+          <strong><%= attachment.previewKind === 'pdf' ? 'PDF 在线预览' : '附件预览' %></strong>
+          <span><%= attachment.source || '' %></span>
+        </div>
+        <a class="button primary" href="<%- url_for(downloadUrl) %>" target="_blank" rel="noopener">下载原件</a>
+      </div>
+
+      <% if (attachment.previewKind === 'pdf') { %>
+        <div class="attachment-frame">
+          <iframe src="<%- url_for(downloadUrl) %>#view=FitH" title="<%= page.title %>"></iframe>
+        </div>
+      <% } else if (attachment.previewKind === 'docx') { %>
+        <div
+          class="docx-preview-shell"
+          data-docx-preview
+          data-docx-url="<%- url_for(downloadUrl) %>"
+          data-docx-size="<%= Number(attachment.size || 0) %>"
+        >
+          <div class="docx-preview-status" data-docx-status>
+            <strong>正在准备 DOCX 预览</strong>
+            <span>文档会在浏览器端临时解析，不会生成额外转换文件。</span>
+          </div>
+          <div class="docx-preview-document" data-docx-output></div>
+        </div>
+      <% } else { %>
+        <div class="attachment-empty-state">
+          <p class="eyebrow">Attachment</p>
+          <h2>此附件暂不支持内嵌预览</h2>
+          <p>可以先下载原始文件查看，后续再按格式补充专用预览器。</p>
+          <a class="button primary" href="<%- url_for(downloadUrl) %>" target="_blank" rel="noopener">下载附件</a>
+        </div>
+      <% } %>
+    </section>
+  </article>
+</section>
+
+<% if (attachment.previewKind === 'docx') { %>
+  <script defer src="<%- url_for('/vendor/jszip.min.js') %>"></script>
+  <script defer src="<%- url_for('/vendor/docx-preview.min.js') %>"></script>
+  <script defer src="<%- url_for('/js/docx-viewer.js') %>"></script>
+<% } %>

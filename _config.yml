@@ -40,3 +40,6 @@ metadata:
 
 ignore:
   - "**/~$*"
+
+skip_render:
+  - "docs-assets/**"

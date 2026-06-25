@@ -1,0 +1,37 @@
+虚函数表指针（vtable pointer）是 C++ 中用于支持多态性的机制。在面向对象编程中，虚函数表（vtable）是一个用于动态绑定的表格，包含了类的虚函数的指针。
+
+这里是虚函数表指针的工作原理：
+
+虚函数表的创建：每个有虚函数的类都会有一个虚函数表（vtable）。虚函数表是一个数组，每个元素都是一个指向虚函数的指针。
+
+虚函数表指针的存储：每个对象实例中都会有一个指向其类虚函数表的指针，这个指针称为虚函数表指针（vptr）。它指向对象所属类的虚函数表。
+
+动态绑定：当通过基类指针或引用调用虚函数时，程序使用虚函数表指针来确定实际的函数实现。这使得可以在运行时根据对象的实际类型调用正确的函数实现，实现多态性。
+
+示例
+假设有以下类定义：
+
+cpp
+复制代码
+class Base {
+public
+    virtual void foo() { stdcout  Base foon; }
+    virtual ~Base() {}
+};
+
+class Derived  public Base {
+public
+    void foo() override { stdcout  Derived foon; }
+};
+当你创建一个 Derived 类型的对象并通过 Base 类型的指针调用 foo() 方法时：
+
+cpp
+复制代码
+Base b = new Derived();
+b-foo();
+在这种情况下，b-foo() 实际上会调用 Derived 类中的 foo() 方法。这里的步骤如下：
+
+b 的虚函数表指针（vptr）指向 Derived 类的虚函数表。
+Derived 类的虚函数表中 foo 函数的指针指向 Derived 类的 foo() 实现。
+调用 b-foo() 时，程序通过虚函数表指针找到 Derived 类的 foo() 实现，并调用它。
+这就是虚函数表指针的基本工作原理。它允许 C++ 实现运行时的多态性，使得可以通过基类指针或引用调用派生类的实现。
